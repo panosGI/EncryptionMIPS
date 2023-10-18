@@ -1,0 +1,73 @@
+		# PANAGIWTHS MELAS-FRAGKISKOS P3190118
+
+		.text
+	    .globl main
+		
+main :
+		la $a0,READ_MESSAGE 		
+		li $v0,4					#prints read message
+		syscall
+		li $v0,5 					#integer input
+		syscall
+
+		ble $v0,999,error		
+		bgt $v0,9999,error
+		div $t1,$v0,1000	#first digit
+		rem $v0,$v0,1000
+		div $t2,$v0,100		#second digit
+		rem $v0,$v0,100
+		div $t3,$v0,10		#third digit
+		rem $v0,$v0,10
+		move $t4,$v0        #fourth digit
+		
+							#Encryption of Digits
+		addi $t0,$t1,7		#using $t0 to make the digit+7 number
+		rem $t1,$t0,10		
+		addi $t0,$t2,7
+		rem $t2,$t0,10
+		addi $t0,$t3,7
+		rem $t3,$t0,10
+		addi $t0,$t4,7
+		rem $t4,$t0,10
+		
+		move $t5,$t1     	#temp
+		move $t1,$t3
+		move $t3,$t5
+		move $t5,$t2
+		move $t2,$t4
+		move $t4,$t5
+		
+							#Build Encrypted Number
+		li $t0,0
+		add $t0,$t0,$t1		#after digit change 
+		mul $t0,$t0,10
+		add $t0,$t0,$t2
+		mul $t0,$t0,10
+		add $t0,$t0,$t3
+		mul $t0,$t0,10
+		add $t0,$t0,$t4
+		
+		la $a0,OUTPUT_MESSAGE		
+		li $v0,4						#prints OUTPUT_MESSAGE
+		syscall
+		move $a0,$t0
+		li $v0,1
+		syscall
+		
+		li $v0,10
+		syscall
+error:
+		la $a0,ERROR_MESSAGE
+		li $v0,4			#prints the error message
+		syscall
+		j main
+
+		
+		
+
+	
+
+		.data
+	READ_MESSAGE: 	.asciiz "\nEnter a four digit number to encrypt: "
+	OUTPUT_MESSAGE: .asciiz "\nEncrypted number is : "
+	ERROR_MESSAGE: 	.asciiz "\nInvalid input, not a 4-digit number"
